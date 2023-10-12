@@ -132,3 +132,5 @@ data/
 pyodide
 # Jetbrain
 .idea/
+# mac
+.DS_Store
