@@ -31,13 +31,25 @@ class Module:
 
     def train(self) -> None:
         "Set the mode of this module and all descendent modules to `train`."
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError('Need to implement for Task 0.4')
+        childs = self._modules.values()
+        self.training = True
+        if not childs:
+            return
+        else:
+            for child in childs:
+                child.train()
+            return
 
     def eval(self) -> None:
         "Set the mode of this module and all descendent modules to `eval`."
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError('Need to implement for Task 0.4')
+        children = self._modules.values()
+        self.training = False
+        if not children:
+            return
+        else:
+            for child in children:
+                child.eval()
+            return
 
     def named_parameters(self) -> Sequence[Tuple[str, Parameter]]:
         """
@@ -47,13 +59,37 @@ class Module:
         Returns:
             The name and `Parameter` of each ancestor parameter.
         """
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError('Need to implement for Task 0.4')
+
+        ans = []
+
+        def findname(this: Module, name: str):
+            prefix = name + "." if name else ""
+            for param_name, param in this._parameters.items():
+                ans.append((str(prefix + param_name), param))
+
+            for node_name, node in this._modules.items():
+                findname(node, prefix + node_name)
+
+        findname(self, "")
+
+        return ans
 
     def parameters(self) -> Sequence[Parameter]:
         "Enumerate over all the parameters of this module and its descendents."
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError('Need to implement for Task 0.4')
+        ans = []
+
+        def dfs_param(self: Module,  param_ls: list):
+            children = self.modules()
+            param_ls += self.__dict__["_parameters"].values()
+            if not children:
+                return
+            else:
+                for child in children:
+                    dfs_param(child, param_ls)
+                return
+
+        dfs_param(self, ans)
+        return ans
 
     def add_parameter(self, k: str, v: Any) -> Parameter:
         """
