@@ -62,9 +62,20 @@ def topological_sort(variable: Variable) -> Iterable[Variable]:
     Returns:
         Non-constant Variables in topological order starting from the right.
     """
-    # TODO: Implement for Task 1.4.
-    raise NotImplementedError('Need to implement for Task 1.4')
-
+    # ~TODO: Implement for Task 1.4.
+    # using dfs
+    visited = []
+    sorted_vars = []
+    def dfs_visit(var:Variable):
+        if var.is_constant() or var.unique_id in visited:
+            return
+        if not var.is_leaf():
+            for i in var.parents: # var.history.inputs
+                dfs_visit(i)
+        visited.append(var.unique_id)
+        sorted_vars.append(var)
+    dfs_visit(variable)
+    return sorted_vars
 
 def backpropagate(variable: Variable, deriv: Any) -> None:
     """
@@ -78,7 +89,21 @@ def backpropagate(variable: Variable, deriv: Any) -> None:
     No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
     """
     # TODO: Implement for Task 1.4.
-    raise NotImplementedError('Need to implement for Task 1.4')
+    order_vars = topological_sort(variable)
+    derivative_nodes = {variable.unique_id: deriv} # use a dictionary to store its "parent"
+    for var in order_vars:
+        if var.is_leaf():
+            continue
+        if var.unique_id in derivative_nodes.keys():
+            deriv = derivative_nodes[var.unique_id]
+
+        for curr_var, curr_deriv in var.chain_rule(deriv):
+            if curr_var.is_leaf():
+                curr_var.accumulate_derivative(curr_deriv)
+            elif curr_var.unique_id in derivative_nodes.keys():
+                derivative_nodes[curr_var.unique_id] += curr_deriv
+            else:
+                derivative_nodes[curr_var.unique_id] = curr_deriv  # add it to the dict
 
 
 @dataclass

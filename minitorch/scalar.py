@@ -163,10 +163,11 @@ class Scalar:
         assert h.last_fn is not None
         assert h.ctx is not None
 
-        # TODO: Implement for Task 1.3.
-        # grad = h.last_fn._backward(h.ctx, d_output)
-        # return zip(h.inputs, grad)
-        # zip[] is an "Iterator", which by no mean is an "Iterable"
+        # ~TODO: Implement for Task 1.3.
+        grad = h.last_fn._backward(h.ctx, d_output)
+        return zip(h.inputs, grad)
+        # mapping Variable to corresponding derivative and make it a tuple
+        # zip[Any] is an "Iterator", which by no mean is an "Iterable"
 
     def backward(self, d_output: Optional[float] = None) -> None:
         """
